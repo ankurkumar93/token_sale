@@ -49,15 +49,15 @@ contract MyToken is ERC721, Ownable {
     /// buy function where argument is taken in wei
     function buy(uint _totalEth) public payable{
         uint minsPassed;
+        uint _currentPrice;
         /// calculates time that has been passed since deployment
         minsPassed = (sub(block.timestamp , startTime))/600; 
-        if (minsPassed >= 144){
+        /// calculate current price of token based on time that has been passed
+        _currentPrice = tokenPriceWei - (discount * minsPassed * tokenPriceWei)/100;
+        if (minsPassed >= 144 || _currentPrice < 750000000000000){
             AuctionState = auctionState.ended;
         }
         require(AuctionState == auctionState.running, "currently no auction is running");
-        uint _currentPrice;
-        /// calculate current price of token based on time that has been passed
-        _currentPrice = tokenPriceWei - (discount * minsPassed * tokenPriceWei)/100;
         shareOf[msg.sender] = shareOf[msg.sender] + div(mul(_totalEth, 1 ), _currentPrice);
         /// calculate shares left 
         sharesLeft = sharesLeft - div(mul(_totalEth, 1 ), _currentPrice);
